@@ -71,6 +71,12 @@ class Stage extends React.Component {
         }
         this.props.vm.attachV2SVGAdapter(new V2SVGAdapter());
         this.props.vm.attachV2BitmapAdapter(new V2BitmapAdapter());
+
+        // 定时截图
+        setInterval(()=>{
+            this.getCover();
+        },2000)
+        
     }
     componentDidMount () {
         this.attachRectEvents();
@@ -374,7 +380,20 @@ class Stage extends React.Component {
             this.props.vm.renderer.draw();
         }
     }
+
+    getCover(){
+        // 保存截图
+        this.props.vm.renderer.requestSnapshot(dataURI => {
+            this.props.vm.postIOData('video', {forceTransparentPreview: false});
+            sessionStorage.setItem("cover", dataURI)
+        });
+        //----------
+    }
+
     onStopDrag (mouseX, mouseY) {
+
+        this.getCover();
+
         const dragId = this.state.dragId;
         const commonStopDragActions = () => {
             this.props.vm.stopDrag(dragId);
